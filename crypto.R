@@ -1,4 +1,5 @@
 crypto <-function(df,dfcolumnname) {
+    
     options(warn=-1)
     
     if (!require('stringr')) {
@@ -16,11 +17,11 @@ crypto <-function(df,dfcolumnname) {
     CVal<-vector()
     n=0
     for (n in 1:CLength) {
-        sub<-substr(dfcolumnname,n,n)  
+        sub<-substr(dfcolumnname,n,n)
         CVal<-c(CVal,sub)
         n=n+1
     }
-    UCVal<-unique(CVal)
+    UCVal<-subset(unique(CVal),unique(CVal)!="")
     
     RandomVal<-toupper(c(0:9, letters))
     
@@ -35,18 +36,28 @@ crypto <-function(df,dfcolumnname) {
         subrplcnx<-data.frame()
         suborigx<-data.frame()
         for(n in 1: CLength) {
-            rplcn<-substr(str_replace_all(dfcolumnname[r],OKey[n],SKey[n]),n,n)
+            if(str_length(dfcolumnname[r])==CLength) {
+                rplcn<-substr(str_replace_all(dfcolumnname[r],OKey[n],SKey[n]),n,n)
+                sorig<-substr(str_replace_all(dfcolumnname[r],OKey[n],OKey[n]),n,n) 
+            }
+            if(str_length(dfcolumnname[r])!=CLength) {
+                DifLength<-CLength-str_length(dfcolumnname[r])
+                CoverDif<-str_dup("%", DifLength)
+                rplcn<-substr(paste(c(dfcolumnname[r],CoverDif),collapse=""),n,n)   
+                sorig<-substr(paste(c(dfcolumnname[r],CoverDif),collapse=""),n,n)   
+            }
             subrplcnx<-rbind(c(subrplcnx,rplcn))
-            sorig<-substr(str_replace_all(dfcolumnname[r],OKey[n],OKey[n]),n,n)
-            suborigx<-rbind(c(suborigx,sorig))
+            suborigx<-rbind(c(suborigx,sorig))      
         }
         subrplcn<-c(subrplcn,subrplcnx)
         suborig<-c(suborig,suborigx)
     }
     
+    
     cfrsub<-cbind(subrplcn,pos=1:NRow)
     cforig<-cbind(suborig,pos=1:NRow)
     cfrsubstr<-as.character(subrplcn)
+    cforigstr<-as.character(suborig)
     
     matchrow<-cbind(rbind(cforig), rbind(cfrsub))
     
@@ -73,20 +84,98 @@ crypto <-function(df,dfcolumnname) {
     colsplit<-split(putdef, 1:CLength)
     
     NCol<-length(colsplit[[CLength]])
-    r_crypto <- character()
+    crypto <- character()
     for(i in 1:NCol) {
         word <- character()    
         for(j in 1:CLength) {
             word <- paste(word, colsplit[[j]][[i]], sep = "")
             j=j+1
         }
-        r_crypto <- c(r_crypto, word)
+        crypto <- c(crypto, word)
         i=i+1
     }
     
-    dfkeys<-cbind(OKey,SKey,SKey2)
     
-    write.csv(dfkeys, file="resultkeys.csv")
-    write.csv(r_crypto, file = "crypto.csv")
-    r_crypto  
+    Keycfrsub<-as.character(subrplcn)
+    
+    Keycforig<-as.character(suborig)
+    pastcforig<-paste0(c(OKey,SKey,SKey2,Keycforig,Keycfrsub),collapse="")
+    
+    
+    startkeyorig<-gsub("1","À",pastcforig)
+    Keycforig2<-gsub("2","Á",startkeyorig) 
+    rm(startkeyorig)
+    Keycforig3<-gsub("3","Â",Keycforig2)   
+    rm(Keycforig2)
+    Keycforig4<-gsub("4","Ã",Keycforig3)   
+    rm(Keycforig3)
+    Keycforig5<-gsub("5","Ä",Keycforig4)   
+    rm(Keycforig4)
+    Keycforig6<-gsub("6","Å",Keycforig5)   
+    rm(Keycforig5)
+    Keycforig7<-gsub("7","Ā",Keycforig6)   
+    rm(Keycforig6)
+    Keycforig8<-gsub("8","Æ",Keycforig7)   
+    rm(Keycforig7)
+    Keycforig9<-gsub("9","Ç",Keycforig8)   
+    rm(Keycforig8)
+    Keycforig0<-gsub("0","È",Keycforig9)
+    rm(Keycforig9)
+    KeycforigA<-gsub("A","É",Keycforig0)
+    rm(Keycforig0)
+    KeycforigB<-gsub("B","Ê",KeycforigA)
+    rm(KeycforigA)
+    KeycforigC<-gsub("C","Ë",KeycforigB)
+    rm(KeycforigB)
+    KeycforigD<-gsub("D","Ē",KeycforigC)
+    rm(KeycforigC)
+    KeycforigE<-gsub("E","Ì",KeycforigD)
+    rm(KeycforigD)
+    KeycforigF<-gsub("F","Í",KeycforigE)
+    rm(KeycforigE)
+    KeycforigG<-gsub("G","Î",KeycforigF)
+    rm(KeycforigF)
+    KeycforigH<-gsub("H","Ï",KeycforigG)
+    rm(KeycforigG)
+    KeycforigI<-gsub("I","Ī",KeycforigH)
+    rm(KeycforigH)
+    KeycforigJ<-gsub("J","Ð",KeycforigI)
+    rm(KeycforigI)
+    KeycforigK<-gsub("K","Ñ",KeycforigJ)
+    rm(KeycforigJ)
+    KeycforigL<-gsub("L","Ò",KeycforigK)
+    rm(KeycforigK)
+    KeycforigM<-gsub("M","Ó",KeycforigL)
+    rm(KeycforigL)
+    KeycforigN<-gsub("N","Ô",KeycforigM)
+    rm(KeycforigM)
+    KeycforigO<-gsub("O","Õ",KeycforigN)
+    rm(KeycforigN)
+    KeycforigP<-gsub("P","Ö",KeycforigO)
+    rm(KeycforigO)
+    KeycforigQ<-gsub("Q","Ø",KeycforigP)
+    rm(KeycforigP)
+    KeycforigR<-gsub("R","Ō",KeycforigQ)
+    rm(KeycforigQ)
+    KeycforigS<-gsub("S","Œ",KeycforigR)
+    rm(KeycforigR)
+    KeycforigT<-gsub("T","Š",KeycforigS)
+    rm(KeycforigS)
+    KeycforigU<-gsub("U","þ",KeycforigT)
+    rm(KeycforigT)
+    KeycforigV<-gsub("V","Ù",KeycforigU)
+    rm(KeycforigU)
+    KeycforigW<-gsub("W","Ú",KeycforigV)
+    rm(KeycforigV)
+    KeycforigY<-gsub("Y","Û",KeycforigW)
+    rm(KeycforigW)
+    KeycforigX<-gsub("X","Ü",KeycforigY)
+    rm(KeycforigY)
+    dfkeys<-gsub("Z","Ū",KeycforigX)
+    rm(KeycforigX)
+    
+    
+    write.csv(dfkeys, file="cryptokey.csv")
+    write.csv(crypto, file = "crypto.csv")
+    crypto  
 }
